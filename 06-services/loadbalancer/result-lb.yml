@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: result-lb
+  labels:
+    name: result-lb
+    app: result
+spec:
+  ports:
+  - port: 80
+    targetPort: 80
+  type: LoadBalancer
+  selector:
+     app: result
