@@ -1,5 +1,11 @@
 #!/bin/bash
 
+# Get the version numbers from environment variables
+CONTAINERD_VERSION=${CONTAINERD_VERSION:-"1.7.15"}
+RUNC_VERSION=${RUNC_VERSION:-"1.1.12"}
+CNI_PLUGINS_VERSION=${CNI_PLUGINS_VERSION:-"1.4.1"}
+IS_CONTROL_PLANE=${IS_CONTROL_PLANE:-"true"}
+
 # Open the necessary ports
 sudo ufw allow proto tcp from any to any port 6443,2379,2380,10250,10257,10259,179
 
@@ -30,11 +36,6 @@ EOF
 
 # Apply sysctl params without reboot
 sudo sysctl --system
-
-# Install Containerd, Runc, and CNI plugin
-CONTAINERD_VERSION="1.7.15"
-RUNC_VERSION="1.1.12"
-CNI_PLUGINS_VERSION="1.4.1"
 
 # Install containerd
 curl -Lo /tmp/containerd-${CONTAINERD_VERSION}-linux-amd64.tar.gz \
@@ -82,31 +83,32 @@ sudo apt-get install -y kubelet kubeadm kubectl
 sudo apt-mark hold kubelet kubeadm kubectl
 
 # Create a cluster using kubeadm - Run only on CP
-IPADDR=$(hostname -I)
-APISERVER=$(hostname -s)
-NODENAME=$(hostname -s)
-POD_NET="10.244.0.0/16"
+if [ "$IS_CONTROL_PLANE" = true]; then
+   NODENAME=$(hostname -s)
+   IPADDR=$(hostname -I)
+   APISERVER=$(hostname -s)
+   POD_NET="10.244.0.0/16"
 
-sudo kubeadm init --apiserver-advertise-address=$IPADDR \
-                  --apiserver-cert-extra-sans=$APISERVER \
-                  --pod-network-cidr=$POD_NET \
-                  --node-name $NODENAME
+   sudo kubeadm init --apiserver-advertise-address=$IPADDR \
+                    --apiserver-cert-extra-sans=$APISERVER \
+                    --pod-network-cidr=$POD_NET \
+                    --node-name $NODENAME
 
 
-# Set up kube config for kubectl
-mkdir -p $HOME/.kube
-sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
-sudo chown $(id -u):$(id -g) $HOME/.kube/config
+   # Set up kube config for kubectl
+   mkdir -p $HOME/.kube
+   sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
+   sudo chown $(id -u):$(id -g) $HOME/.kube/config
 
-# Install Calico Operator
-curl -Lo /tmp/tigera-operator.yaml https://raw.githubusercontent.com/projectcalico/calico/v3.27.3/manifests/tigera-operator.yaml
-kubectl create -f /tmp/tigera-operator.yaml
+   # Install Calico Operator
+   curl -Lo /tmp/tigera-operator.yaml https://raw.githubusercontent.com/projectcalico/calico/v3.27.3/manifests/tigera-operator.yaml
+   kubectl create -f /tmp/tigera-operator.yaml
 
-curl -Lo /tmp/custom-resources.yaml https://raw.githubusercontent.com/projectcalico/calico/v3.27.3/manifests/custom-resources.yaml
+   curl -Lo /tmp/custom-resources.yaml https://raw.githubusercontent.com/projectcalico/calico/v3.27.3/manifests/custom-resources.yaml
 
-CIDR='10.244.0.0/16'
-sed -i "s|192.168.0.0/16|$CIDR|" /tmp/custom-resources.yaml
-kubectl create -f /tmp/custom-resources.yaml
+   sed -i "s|192.168.0.0/16|$POD_NET|" /tmp/custom-resources.yaml
+   kubectl create -f /tmp/custom-resources.yaml
+fi
 
 # Join remaining nodes
-sudo kubeadm join 172.16.1.11:6443 --token pydkjw.imeezbjjf8khdhmx --discovery-token-ca-cert-hash sha256:0ed7f52a91274fd5c94c3759400fe6c23c91deb299cb05fc57dbd706525d135a
+#sudo kubeadm join 172.16.1.11:6443 --token pydkjw.imeezbjjf8khdhmx --discovery-token-ca-cert-hash sha256:0ed7f52a91274fd5c94c3759400fe6c23c91deb299cb05fc57dbd706525d135a
