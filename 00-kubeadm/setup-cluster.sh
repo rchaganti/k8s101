@@ -109,6 +109,12 @@ if [ "$IS_CONTROL_PLANE" = true]; then
 
    sed -i "s|192.168.0.0/16|$POD_NET|" /tmp/custom-resources.yaml
    kubectl create -f /tmp/custom-resources.yaml
+
+   apt install bash-completion
+   source /usr/share/bash-completion/bash_completion
+   echo 'source <(kubectl completion bash)' >>~/.bashrc
+   echo 'alias k=kubectl' >>~/.bashrc
+   echo 'complete -o default -F __start_kubectl k' >>~/.bashrc
 fi
 
 # Join remaining nodes
