@@ -1,0 +1,31 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  creationTimestamp: null
+  labels:
+    app: worker
+  name: worker
+spec:
+  nodeSelector:
+    tier: standard
+  containers:
+  - image: docker/example-voting-app-worker
+    name: worker
+  dnsPolicy: ClusterFirst
+  restartPolicy: Always
+  initContainers:
+  - image: busybox
+    name: redis-check
+    command: ['/bin/sh']
+    args: [
+      '-c',
+      'for i in {1..5}; do echo "checking if redis is available"; sleep 3; if nc -zv redis 6379; then exit 0; fi; done; exit 1'
+    ]
+  - image: busybox
+    name: db-check
+    command: ['/bin/sh']
+    args: [
+      '-c',
+      'for i in {1..5}; do echo "checking if db is available"; sleep 3; if nc -zv db 5432; then exit 0; fi; done; exit 1'
+    ]
+status: {}

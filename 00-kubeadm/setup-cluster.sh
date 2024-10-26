@@ -1,10 +1,10 @@
 #!/bin/bash
 
 # Get the version numbers from environment variables
-CONTAINERD_VERSION=${CONTAINERD_VERSION:-"1.7.15"}
-RUNC_VERSION=${RUNC_VERSION:-"1.1.12"}
-CNI_PLUGINS_VERSION=${CNI_PLUGINS_VERSION:-"1.4.1"}
-KUBERNETES_VERSION=${KUBERNETES_VERSION:-"1.30"}
+CONTAINERD_VERSION=${CONTAINERD_VERSION:-"1.7.23"}
+RUNC_VERSION=${RUNC_VERSION:-"1.2.0"}
+CNI_PLUGINS_VERSION=${CNI_PLUGINS_VERSION:-"1.6.0"}
+KUBERNETES_VERSION=${KUBERNETES_VERSION:-"1.31"}
 IS_CONTROL_PLANE=${IS_CONTROL_PLANE:-"false"}
 
 # Open the necessary ports
@@ -102,10 +102,10 @@ if [ "$IS_CONTROL_PLANE" = true]; then
    sudo chown $(id -u):$(id -g) $HOME/.kube/config
 
    # Install Calico Operator
-   curl -Lo /tmp/tigera-operator.yaml https://raw.githubusercontent.com/projectcalico/calico/v3.27.3/manifests/tigera-operator.yaml
+   curl -Lo /tmp/tigera-operator.yaml https://raw.githubusercontent.com/projectcalico/calico/v3.28.2/manifests/tigera-operator.yaml
    kubectl create -f /tmp/tigera-operator.yaml
 
-   curl -Lo /tmp/custom-resources.yaml https://raw.githubusercontent.com/projectcalico/calico/v3.27.3/manifests/custom-resources.yaml
+   curl -Lo /tmp/custom-resources.yaml https://raw.githubusercontent.com/projectcalico/calico/v3.28.2/manifests/custom-resources.yaml
 
    sed -i "s|192.168.0.0/16|$POD_NET|" /tmp/custom-resources.yaml
    kubectl create -f /tmp/custom-resources.yaml

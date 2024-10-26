@@ -1,0 +1,8 @@
+apiVersion: scheduling.k8s.io/v1
+kind: PriorityClass
+metadata:
+  name: db-priority
+globalDefault: false
+value: 100000
+preemptionPolicy: Never
+description: "Priority class for all DB services"
