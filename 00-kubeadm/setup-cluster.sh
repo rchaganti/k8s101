@@ -84,7 +84,7 @@ sudo apt-get install -y kubelet kubeadm kubectl
 sudo apt-mark hold kubelet kubeadm kubectl
 
 # Create a cluster using kubeadm - Run only on CP1
-if [ "$IS_CONTROL_PLANE" = true]; then
+if [ "$IS_CONTROL_PLANE" = true ]; then
    NODENAME=$(hostname -s)
    IPADDR=$(hostname -I)
    APISERVER=$(hostname -s)
@@ -102,19 +102,19 @@ if [ "$IS_CONTROL_PLANE" = true]; then
    sudo chown $(id -u):$(id -g) $HOME/.kube/config
 
    # Install Calico Operator
-   curl -Lo /tmp/tigera-operator.yaml https://raw.githubusercontent.com/projectcalico/calico/v3.28.2/manifests/tigera-operator.yaml
-   kubectl create -f /tmp/tigera-operator.yaml
+   sudo curl -Lo /tmp/tigera-operator.yaml https://raw.githubusercontent.com/projectcalico/calico/v3.28.2/manifests/tigera-operator.yaml
+   sudo kubectl create -f /tmp/tigera-operator.yaml
 
-   curl -Lo /tmp/custom-resources.yaml https://raw.githubusercontent.com/projectcalico/calico/v3.28.2/manifests/custom-resources.yaml
+   sudo curl -Lo /tmp/custom-resources.yaml https://raw.githubusercontent.com/projectcalico/calico/v3.28.2/manifests/custom-resources.yaml
 
-   sed -i "s|192.168.0.0/16|$POD_NET|" /tmp/custom-resources.yaml
-   kubectl create -f /tmp/custom-resources.yaml
+   sudo sed -i "s|192.168.0.0/16|$POD_NET|" /tmp/custom-resources.yaml
+   sudo kubectl create -f /tmp/custom-resources.yaml
 
-   apt install bash-completion
-   source /usr/share/bash-completion/bash_completion
-   echo 'source <(kubectl completion bash)' >>~/.bashrc
-   echo 'alias k=kubectl' >>~/.bashrc
-   echo 'complete -o default -F __start_kubectl k' >>~/.bashrc
+   sudo apt install bash-completion
+   sudo source /usr/share/bash-completion/bash_completion
+   sudo echo 'source <(kubectl completion bash)' >>~/.bashrc
+   sudo echo 'alias k=kubectl' >>~/.bashrc
+   sudo echo 'complete -o default -F __start_kubectl k' >>~/.bashrc
 fi
 
 # Join remaining nodes
