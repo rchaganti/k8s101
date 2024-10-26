@@ -98,23 +98,23 @@ if [ "$IS_CONTROL_PLANE" = true ]; then
 
    # Set up kube config for kubectl
    mkdir -p $HOME/.kube
-   sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
-   sudo chown $(id -u):$(id -g) $HOME/.kube/config
+   cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
+   chown $(id -u):$(id -g) $HOME/.kube/config
 
    # Install Calico Operator
-   sudo curl -Lo /tmp/tigera-operator.yaml https://raw.githubusercontent.com/projectcalico/calico/v3.28.2/manifests/tigera-operator.yaml
+   curl -Lo /tmp/tigera-operator.yaml https://raw.githubusercontent.com/projectcalico/calico/v3.28.2/manifests/tigera-operator.yaml
    sudo kubectl create -f /tmp/tigera-operator.yaml
 
-   sudo curl -Lo /tmp/custom-resources.yaml https://raw.githubusercontent.com/projectcalico/calico/v3.28.2/manifests/custom-resources.yaml
+   curl -Lo /tmp/custom-resources.yaml https://raw.githubusercontent.com/projectcalico/calico/v3.28.2/manifests/custom-resources.yaml
 
-   sudo sed -i "s|192.168.0.0/16|$POD_NET|" /tmp/custom-resources.yaml
+   sed -i "s|192.168.0.0/16|$POD_NET|" /tmp/custom-resources.yaml
    sudo kubectl create -f /tmp/custom-resources.yaml
 
    sudo apt install bash-completion
-   sudo source /usr/share/bash-completion/bash_completion
-   sudo echo 'source <(kubectl completion bash)' >>~/.bashrc
-   sudo echo 'alias k=kubectl' >>~/.bashrc
-   sudo echo 'complete -o default -F __start_kubectl k' >>~/.bashrc
+   source /usr/share/bash-completion/bash_completion
+   echo 'source <(kubectl completion bash)' >>~/.bashrc
+   echo 'alias k=kubectl' >>~/.bashrc
+   echo 'complete -o default -F __start_kubectl k' >>~/.bashrc
 fi
 
 # Join remaining nodes
