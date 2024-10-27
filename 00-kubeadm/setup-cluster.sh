@@ -88,7 +88,7 @@ sudo apt-get install -y kubelet kubeadm kubectl
 sudo apt-mark hold kubelet kubeadm kubectl
 
 # Create a cluster using kubeadm - Run only on CP1
-if [ "$IS_CONTROL_PLANE" = true ]; then
+if [ x"$IS_CONTROL_PLANE" = true ]; then
    NODENAME=$(hostname -s)
    IPADDR=$(hostname -I)
    APISERVER=$(hostname -s)
