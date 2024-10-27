@@ -7,6 +7,10 @@ CNI_PLUGINS_VERSION=${CNI_PLUGINS_VERSION:-"1.6.0"}
 KUBERNETES_VERSION=${KUBERNETES_VERSION:-"1.31"}
 IS_CONTROL_PLANE=${IS_CONTROL_PLANE:-"false"}
 
+# Environment variables for apt upgrade
+export DEBIAN_FRONTEND=noninteractive
+export NEEDRESTART_MODE=a
+
 # Open the necessary ports
 sudo ufw allow proto tcp from any to any port 6443,2379,2380,10250,10257,10259,179
 
