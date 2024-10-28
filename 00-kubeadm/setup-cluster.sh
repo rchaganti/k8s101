@@ -94,7 +94,7 @@ sudo apt-mark hold kubelet kubeadm kubectl
 # Create a cluster using kubeadm - Run only on CP1
 if [ "$IS_CONTROL_PLANE" = "true" ]; then
    NODENAME=$(hostname -s)
-   IPADDR=$(hostname -I)
+   IPADDR=$(hostname -I | awk '{print $1}')
    APISERVER=$(hostname -s)
    POD_NET="10.244.0.0/16"
 
