@@ -16,7 +16,10 @@ sudo ufw allow proto tcp from any to any port 6443,2379,2380,10250,10257,10259,1
 
 # Install initial dependencies
 sudo apt-get update
-sudo apt-get install -y apt-transport-https ca-certificates curl
+sudo apt-get install -y \
+  --option=Dpkg::Options::="--force-confdef" \
+  --option=Dpkg::Options::="--force-confold" \
+  apt-transport-https ca-certificates curl gpg
 
 # Turn off swap
 sudo swapoff -a
@@ -72,10 +75,6 @@ sudo tar Cxzvf /opt/cni/bin /tmp/cni-plugins-amd64-v${CNI_PLUGINS_VERSION}.tgz
 # clean up CNI plugins
 rm -rf /tmp/cni-plugins-amd64-v${CNI_PLUGINS_VERSION}.tgz
 
-# Install kubeadm, kubectl, and kubelet
-sudo apt-get update
-sudo apt-get install -y apt-transport-https ca-certificates curl gpg
-
 # If the directory `/etc/apt/keyrings` does not exist, it should be created before the curl command, read the note below.
 # sudo mkdir -p -m 755 /etc/apt/keyrings
 curl -fsSL https://pkgs.k8s.io/core:/stable:/v${KUBERNETES_VERSION}/deb/Release.key | sudo gpg --dearmor -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg
@@ -84,11 +83,16 @@ curl -fsSL https://pkgs.k8s.io/core:/stable:/v${KUBERNETES_VERSION}/deb/Release.
 echo "deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/v${KUBERNETES_VERSION}/deb/ /" | sudo tee /etc/apt/sources.list.d/kubernetes.list
 
 sudo apt-get update
-sudo apt-get install -y kubelet kubeadm kubectl
+
+sudo apt-get install -y \
+  --option=Dpkg::Options::="--force-confdef" \
+  --option=Dpkg::Options::="--force-confold" \
+  kubelet kubeadm kubectl
+
 sudo apt-mark hold kubelet kubeadm kubectl
 
 # Create a cluster using kubeadm - Run only on CP1
-if [ x"$IS_CONTROL_PLANE" = true ]; then
+if [ "$IS_CONTROL_PLANE" = "true" ]; then
    NODENAME=$(hostname -s)
    IPADDR=$(hostname -I)
    APISERVER=$(hostname -s)
@@ -104,17 +108,17 @@ if [ x"$IS_CONTROL_PLANE" = true ]; then
 
    # Set up kube config for kubectl
    mkdir -p $HOME/.kube
-   cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
-   chown $(id -u):$(id -g) $HOME/.kube/config
+   sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
+   sudo chown $(id -u):$(id -g) $HOME/.kube/config
 
    # Install Calico Operator
    curl -Lo /tmp/tigera-operator.yaml https://raw.githubusercontent.com/projectcalico/calico/v3.28.2/manifests/tigera-operator.yaml
-   sudo kubectl create -f /tmp/tigera-operator.yaml
+   kubectl create -f /tmp/tigera-operator.yaml
 
    curl -Lo /tmp/custom-resources.yaml https://raw.githubusercontent.com/projectcalico/calico/v3.28.2/manifests/custom-resources.yaml
 
    sed -i "s|192.168.0.0/16|$POD_NET|" /tmp/custom-resources.yaml
-   sudo kubectl create -f /tmp/custom-resources.yaml
+   kubectl create -f /tmp/custom-resources.yaml
 
    sudo apt install bash-completion
    source /usr/share/bash-completion/bash_completion
