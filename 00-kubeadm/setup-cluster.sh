@@ -114,10 +114,10 @@ if [ "$IS_CONTROL_PLANE" = "true" ]; then
    sudo chown $(id -u):$(id -g) $HOME/.kube/config
 
    # Install Calico Operator
-   curl -Lo /tmp/tigera-operator.yaml https://raw.githubusercontent.com/projectcalico/calico/v3.29.1/manifests/tigera-operator.yaml
+   curl -Lo /tmp/tigera-operator.yaml https://raw.githubusercontent.com/projectcalico/calico/v3.29.2/manifests/tigera-operator.yaml
    kubectl create -f /tmp/tigera-operator.yaml
 
-   curl -Lo /tmp/custom-resources.yaml https://raw.githubusercontent.com/projectcalico/calico/v3.29.1/manifests/custom-resources.yaml
+   curl -Lo /tmp/custom-resources.yaml https://raw.githubusercontent.com/projectcalico/calico/v3.29.2/manifests/custom-resources.yaml
 
    sed -i "s|192.168.0.0/16|$POD_NET|" /tmp/custom-resources.yaml
    kubectl create -f /tmp/custom-resources.yaml
