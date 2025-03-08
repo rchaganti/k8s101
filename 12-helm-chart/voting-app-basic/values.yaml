@@ -1,0 +1,29 @@
+worker:
+  image_name: dockersamples/examplevotingapp_worker
+  replica_count: 1
+
+vote:
+  image_name: dockersamples/examplevotingapp_vote
+  container_port: 80
+  port: 5000
+  node_port: 31000
+  replica_count: 1
+
+result:
+  image_name: dockersamples/examplevotingapp_result
+  container_port: 80
+  port: 5001
+  node_port: 31001
+  replica_count: 1
+
+redis:
+  port: 6379
+  replica_count: 1
+  image_name: redis:alpine
+
+db:
+  port: 5432
+  replica_count: 1
+  image_name: postgres:15-alpine
+  user_name: postgres
+  password: postgres

@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: {{ .Release.Name }}-vote
+  name: {{ .Release.Name }}-vote-svc
+spec:
+  type: NodePort
+  ports:
+  - name: {{ .Release.Name }}-vote-svc
+    port: {{ .Values.vote.port }}
+    targetPort: {{ .Values.vote.container_port }}
+    nodePort: {{ .Values.vote.node_port }}
+  selector:
+    app: {{ .Release.Name }}-vote
+  

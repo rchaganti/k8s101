@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: {{ .Release.Name }}-vote
+  name: {{ .Release.Name }}-vote
+spec:
+  replicas: {{ .Values.vote.replica_count }}
+  selector:
+    matchLabels:
+      app: {{ .Release.Name }}-vote
+  template:
+    metadata:
+      labels:
+        app: {{ .Release.Name }}-vote
+    spec:
+      containers:
+      - image: {{ .Values.vote.image_name }}
+        name: {{ .Release.Name }}-vote
+        ports:
+        - containerPort: {{ .Values.vote.container_port }}
+          name: {{ .Release.Name }}-vote

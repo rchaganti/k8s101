@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: {{ .Release.Name }}-result
+  name: {{ .Release.Name }}-result-svc
+spec:
+  type: NodePort
+  ports:
+  - name: {{ .Release.Name }}-result-svc
+    port: {{ .Values.result.port }}
+    targetPort: {{ .Values.result.container_port }}
+    nodePort: {{ .Values.result.node_port }}
+  selector:
+    app: {{ .Release.Name }}-result
