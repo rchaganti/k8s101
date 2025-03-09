@@ -1,0 +1,11 @@
+apiVersion: kro.run/v1alpha1
+kind: VoteApplication
+metadata:
+  name: my-vote-1
+spec:
+  name: my-vote-1
+  redis: {}
+  db: {}
+  worker: {}
+  vote: {}
+  result: {}
