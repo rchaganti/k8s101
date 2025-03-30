@@ -103,7 +103,7 @@ if [ "$IS_CONTROL_PLANE" = "true" ]; then
    sudo kubeadm init --apiserver-advertise-address=$IPADDR \
                     --apiserver-cert-extra-sans=$APISERVER \
                     --pod-network-cidr=$POD_NET \
-                    --node-name $NODENAME \
+                    --node-name $NODENAME
                     #Use this to ignore preflight checks 
                     #--ignore-preflight-errors=all
 
